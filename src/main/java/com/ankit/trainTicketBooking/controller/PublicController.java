@@ -6,15 +6,13 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/public")
 public class PublicController {
@@ -33,7 +31,9 @@ public class PublicController {
             return new ResponseEntity<>(response,HttpStatus.CREATED);
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<>("Signup failed: Some fields are empty or account already exits.",HttpStatus.BAD_REQUEST);
+            Map<String, Object> errorResponse = new LinkedHashMap<>();
+            errorResponse.put("message", "Signup failed: Some fields are empty or account already exists.");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
     }
 }

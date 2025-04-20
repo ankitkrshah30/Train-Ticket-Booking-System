@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Details - Train Ticket Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-100 to-blue-300 min-h-screen flex items-center justify-center">
+<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+    <h2 class="text-3xl font-bold text-center mb-6 text-blue-700">User Details</h2>
+
+    <div>
+        <p><strong>User ID:</strong> <span id="userId"></span></p>
+        <p><strong>Name:</strong> <span id="userName"></span></p>
+        <p><strong>Email:</strong> <span id="userEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="userPhone"></span></p>
+        <p><strong>Role:</strong> <span id="userRole"></span></p>
+    </div>
+
+    <p id="responseMsg" class="mt-4 text-center text-sm text-gray-700"></p>
+</div>
+
+<script>
+    window.onload = async () => {
+        const userId = window.location.pathname.split('/').pop(); // Get the user ID from the URL
+        const res = await fetch(`http://localhost:8080/user/details/${userId}`);
+        const result = await res.json();
+
+        if (res.ok) {
+            // Display user details
+            document.getElementById('userId').textContent = result.userid;
+            document.getElementById('userName').textContent = result.name;
+            document.getElementById('userEmail').textContent = result.email;
+            document.getElementById('userPhone').textContent = result.phone;
+            document.getElementById('userRole').textContent = result.role;
+        } else {
+            // Handle error fetching user details
+            document.getElementById('responseMsg').textContent = result.message || "Error fetching user details.";
+            document.getElementById('responseMsg').classList.add("text-red-600");
+        }
+    };
+</script>
+</body>
+</html>

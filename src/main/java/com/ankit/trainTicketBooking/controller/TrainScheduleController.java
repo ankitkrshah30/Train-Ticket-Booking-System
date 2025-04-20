@@ -23,8 +23,8 @@ public class TrainScheduleController {
             trainScheduleService.saveSchedule(trainNo,trainScheduleList);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<>(e,HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error Train Not Found.\n Add Train first.",
+                    HttpStatus.BAD_REQUEST);
         }
 
     }

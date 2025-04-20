@@ -6,6 +6,7 @@ import com.ankit.trainTicketBooking.repository.TrainScheduleRepository;
 import com.ankit.trainTicketBooking.repository.TrainsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class TrainScheduleService {
     @Autowired
     private TrainsRepository trainsRepository;
 
+    @Transactional
     public void saveSchedule(String trainNo, List<TrainSchedule> schedule) {
         Optional<Trains> optionalTrain = trainsRepository.findByTrainNumber(trainNo);
         optionalTrain.ifPresentOrElse(train -> {

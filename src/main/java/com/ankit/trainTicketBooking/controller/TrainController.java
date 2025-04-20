@@ -26,7 +26,7 @@ public class TrainController {
             Trains trains=trainService.saveTrain(train);
             return new ResponseEntity<>(trains,HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Some error occurred.",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Train has saved.",HttpStatus.BAD_REQUEST);
         }
     }
 

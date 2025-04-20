@@ -35,5 +35,7 @@ public class User {
     private String role;
     private LocalDateTime date;
     @DBRef
-    private List<Bookings> bookings=new ArrayList<>();
+    private List<Bookings> bookingHistory=new ArrayList<>();
+    @DBRef
+    private List<Payments> paymentHistory=new ArrayList<>();
 }

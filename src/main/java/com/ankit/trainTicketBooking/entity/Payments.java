@@ -18,14 +18,15 @@ public class Payments {
     private ObjectId paymentId;
     @NonNull
     private ObjectId bookingId;
-    @NonNull
+    //@NonNull
     private double amount;
     @NonNull
     private PaymentStatus paymentStatus;
     public enum PaymentStatus {
         pending,
         confirmed,
-        failed
+        failed,
+        refunding
     }
     /*@NonNull
     @Indexed(unique = true)

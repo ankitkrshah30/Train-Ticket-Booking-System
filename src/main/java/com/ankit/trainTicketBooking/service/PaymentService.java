@@ -1,16 +1,15 @@
 package com.ankit.trainTicketBooking.service;
 
-import com.ankit.trainTicketBooking.entity.Bookings;
-import com.ankit.trainTicketBooking.entity.Passenger;
-import com.ankit.trainTicketBooking.entity.Payments;
-import com.ankit.trainTicketBooking.entity.Seats;
+import com.ankit.trainTicketBooking.entity.*;
 import com.ankit.trainTicketBooking.repository.BookingsRepository;
 import com.ankit.trainTicketBooking.repository.PaymentsRepository;
 import com.ankit.trainTicketBooking.repository.SeatsRepository;
+import com.ankit.trainTicketBooking.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,17 +28,21 @@ public class PaymentService {
     @Autowired
     public SeatsRepository seatsRepository;
 
-    public ResponseEntity<?> initiatePayment(Payments payment){
+    @Autowired
+    public UserRepository userRepository;
+
+    @Transactional
+    public ResponseEntity<?> initiatePayment(String userid,Payments payment){
         Optional<Bookings> optionalBooking=bookingsRepository.findByBookingId(payment.getBookingId());
         if(optionalBooking.isPresent()){
 
             Bookings booking=optionalBooking.get();
-
+            User user=userRepository.findByUserid(userid);
             if(payment.isPaymentSuccessful()&&booking.getStatus().equals(Bookings.BookingStatus.waiting)){
                 // Seats Allotment if Seats are available
                 //getting total seats of particular seatClass
                 List<Seats> seats=seatsRepository.findBySeatClassAndTrainNo(booking.getSeatClass(),booking.getTrainNo());
-                //list of all the bookings done irrespective of being cancelled, confimed, waiting
+                //list of all the bookings done irrespective of being cancelled, confirmed, waiting
                 List<Bookings> bookedList =bookingsRepository.findByTrainNoAndTravelDateAndSeatClass(
                         booking.getTrainNo(),booking.getTravelDate(),booking.getSeatClass()
                 );
@@ -69,19 +72,35 @@ public class PaymentService {
                 for (int i = 0; i < passengers.size(); i++) {
                     passengers.get(i).setSeatId(availableSeats.get(i).getSeatId());
                 }
-
+                //setting booking from waiting to confirmed
                 booking.setStatus(Bookings.BookingStatus.confirmed);
+                //setting paymentStatus confirmed along with Payment date and time
                 payment.setPaymentStatus(Payments.PaymentStatus.confirmed);
                 payment.setPaymentDate(LocalDateTime.now());
+                //saving PaymentHistory to the User class
                 paymentsRepository.save(payment);
                 bookingsRepository.save(booking);
+                user.getPaymentHistory().add(payment);
+                userRepository.save(user);
                 return new ResponseEntity<>("Payment Successful and Seat Booked.", HttpStatus.ACCEPTED);
             }
-            return new ResponseEntity<>("Payment is Not Successful. Payment May Have been done or Payment is not Successful",
+            else if(!payment.isPaymentSuccessful()&&booking.getStatus().equals(Bookings.BookingStatus.waiting)){
+                payment.setPaymentStatus(Payments.PaymentStatus.failed);
+                paymentsRepository.save(payment);
+                user.getPaymentHistory().add(payment);
+                userRepository.save(user);
+                return new ResponseEntity<>("Payment was not successful.",
+                        HttpStatus.OK);
+            }
+            return new ResponseEntity<>("Payment Has been done or Booking failed.",
                     HttpStatus.NOT_ACCEPTABLE);
         }
         else{
             return new ResponseEntity<>("Booking Id Not Found.",HttpStatus.NOT_FOUND);
         }
+
+        /*public ResponseEntity<?> refundPayment(){
+
+        }*/
     }
 }
