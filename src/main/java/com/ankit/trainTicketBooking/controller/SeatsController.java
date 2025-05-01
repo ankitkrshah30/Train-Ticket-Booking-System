@@ -16,7 +16,7 @@ public class SeatsController {
     @Autowired
     public SeatService seatService;
 
-    @PostMapping("/{trainNumber}/create")
+    @PostMapping("/create/{trainNumber}")
     public ResponseEntity<?> createSeats(@PathVariable String trainNumber){
         try{
             seatService.seedSeatsForTrain(trainNumber);

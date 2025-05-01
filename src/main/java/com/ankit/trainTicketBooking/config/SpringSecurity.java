@@ -26,9 +26,10 @@ public class SpringSecurity {
                 request.requestMatchers("/user",
                                 "/book-ticket",
                                 "/payment").authenticated()
-                        /*.requestMatchers("/admin/**",
+                        .requestMatchers("/admin/**",
                                 "/schedule/create",
-                                "/train/create").hasRole("Admin")*/
+                                "/train/create",
+                                "/seats/create").hasRole("Admin")
                         .anyRequest().permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

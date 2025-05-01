@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Document(collection = "bookings")
@@ -34,7 +36,8 @@ public class Bookings {
     private LocalDate travelDate;
     private String seatClass;
     private String pnr;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = ZonedDateTime.now(ZoneId.of("Asia/Kolkata")).toLocalDateTime();
+
 
     @NonNull
     private BookingStatus status;
