@@ -7,14 +7,17 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
-@Document(collection = "tteaccess")
+@Document(collection = "tteAccess")
 public class TteAccess {
     @Id
-    private ObjectId tte_id;
+    private ObjectId tteId;
     @NonNull
     private String userid;
     @NonNull
-    private String train_no;
+    private String trainNo;
+    private LocalDate date;
 }

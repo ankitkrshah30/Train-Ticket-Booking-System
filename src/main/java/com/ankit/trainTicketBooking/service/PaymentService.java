@@ -1,10 +1,7 @@
 package com.ankit.trainTicketBooking.service;
 
 import com.ankit.trainTicketBooking.entity.*;
-import com.ankit.trainTicketBooking.repository.BookingsRepository;
-import com.ankit.trainTicketBooking.repository.PaymentsRepository;
-import com.ankit.trainTicketBooking.repository.SeatsRepository;
-import com.ankit.trainTicketBooking.repository.UserRepository;
+import com.ankit.trainTicketBooking.repository.*;
 import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +29,9 @@ public class PaymentService {
 
     @Autowired
     public UserRepository userRepository;
+
+    @Autowired
+    public TrainOnRailRepository trainOnRailRepository;
 
     @Transactional
     public ResponseEntity<?> initiatePayment(String userid,Payments payment){
@@ -70,6 +70,7 @@ public class PaymentService {
                     return new ResponseEntity<>("Not enough seats available. Your Money will be refunded soon.",
                             HttpStatus.BAD_REQUEST);
                 }
+                TrainOnRail trainOnRail=trainOnRailRepository.findByTrainNoAndTravelDate(booking.getTrainNo(),booking.getTravelDate());
                 //Allot seats to the passengers
                 for (int i = 0; i < passengers.size(); i++) {
                     passengers.get(i).setSeatId(availableSeats.get(i).getSeatId());
@@ -84,6 +85,8 @@ public class PaymentService {
                 bookingsRepository.save(booking);
                 user.getPaymentHistory().add(payment);
                 userRepository.save(user);
+                trainOnRail.getPassengerBookingIds().add(booking);
+                trainOnRailRepository.save(trainOnRail);
                 return new ResponseEntity<>("Payment Successful and Seat Booked.", HttpStatus.ACCEPTED);
             }
             else if(!payment.isPaymentSuccessful()&&booking.getStatus().equals(Bookings.BookingStatus.waiting)){
